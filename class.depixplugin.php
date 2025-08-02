@@ -4,12 +4,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-require_once DEPIXPLUGIN_PLUGIN_DIR . 'src/services/autoloader.php';
-
 class DepixPlugin {
     
     public static function init() {
-        depix_init_services();
+        add_action('admin_notices', function() {
+            echo '<div class="notice notice-success is-dismissible"><p>Hello World from Depix WP Plugin!</p></div>';
+        });
     }
     
     public static function plugin_activation() {
@@ -22,8 +22,10 @@ class DepixPlugin {
     }
 
     public static function plugin_deactivation() {
-        delete_transient('depix_p2p_data');
+        delete_option('depix_plugin_options');
+        if (function_exists('delete_transient')) {
+            delete_transient('depix_p2p_data');
+        }
         flush_rewrite_rules();
     }
 }
-add_action('plugins_loaded', array('DepixPlugin', 'init'));

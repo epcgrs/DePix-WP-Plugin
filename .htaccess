@@ -1,4 +1,3 @@
-# Block direct access to the plugin files except depixplugin.php
 <FilesMatch "^(depixplugin\.php)$">
     Allow from all
 </FilesMatch>
@@ -6,11 +5,9 @@
     Deny from all
 </FilesMatch>
 
-# Protect sensitive files
 <FilesMatch "\.(htaccess|htpasswd|ini|log|conf|env)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# Prevent directory listing
 Options -Indexes
