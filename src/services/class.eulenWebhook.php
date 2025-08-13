@@ -1,5 +1,7 @@
 <?php
 
+if (!defined('ABSPATH')) { exit; }
+
 include_once ABSPATH . 'wp-load.php';
 
 class EulenWebhook {
@@ -29,7 +31,6 @@ class EulenWebhook {
             return new WP_REST_Response(['error' => 'invalid_payload'], 400);
         }
 
-        // Normaliza identificador: alguns webhooks enviam qrId em vez de id
         if (empty($data['id']) && !empty($data['qrId'])) {
             $data['id'] = $data['qrId'];
         }
@@ -37,27 +38,21 @@ class EulenWebhook {
             return new WP_REST_Response(['error' => 'missing_id'], 400);
         }
 
-        // Log básico (pode ser removido em produção)
         error_log('[Depix][Webhook] Payload: ' . substr($rawData,0,1000));
 
-        $token = EulenPanel::get_plain_token();
-        if ($token) {
-            $provided = $request->get_header('x-depix-signature');
-            $calc = base64_encode(hash_hmac('sha256', $rawData, $token, true));
-            if (!$provided || !hash_equals($calc, $provided)) {
-                return new WP_REST_Response(['error' => 'invalid_signature'], 401);
-            }
-        }
 
         $updated = $this->database->updateTransaction($data);
         if (!$updated) {
-            // Tenta inserção se não existir (caso webhook chegue antes do registro local)
             $this->database->storeTransaction($data, 0, $data['valueInCents'] ?? ($data['amountInCents'] ?? 0));
-            $updated = true;
+            error_log('[Depix][Webhook] Registro inserido pois não existia (tx='.$data['id'].').');
+        } else {
+            error_log('[Depix][Webhook] Registro atualizado (tx='.$data['id'].').');
         }
 
+        $finals = ['paid','completed','confirmed','success','depix_sent','expired','canceled','error'];
         return new WP_REST_Response([
-            'ok' => (bool)$updated,
+            'ok' => true,
+            'final' => in_array($data['status'] ?? '', $finals, true),
         ], 200);
     }
 

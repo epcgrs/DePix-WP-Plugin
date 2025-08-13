@@ -1,8 +1,7 @@
 <?php 
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) { exit; }
+
 require_once DEPIXPLUGIN_PLUGIN_DIR . 'src/helpers/class.requests.php';
 
 class EulenService {
@@ -13,9 +12,9 @@ class EulenService {
     private function ensureAuthToken(): void
     {
         if (empty($this->token)) {
-            return; // já logado no construtor
+            return;
         }
-        // Se parecer estrutura cifrada JSON, tenta decriptação tardia
+        
         if (preg_match('/^\{"v":\d+.*"ct":/s', $this->token)) {
             $decoded = json_decode($this->token, true);
             if (is_array($decoded) && isset($decoded['alg'],$decoded['ct'])) {
@@ -32,7 +31,7 @@ class EulenService {
                 return;
             }
         }
-        // Se chegou aqui e token é plaintext, injeta no helper
+
         if (!preg_match('/^\{"v":\d+.*"ct":/s', $this->token)) {
             $this->helpers->setAuthToken($this->token);
         }
@@ -51,13 +50,13 @@ class EulenService {
         } else {
             error_log('[Depix][Token] Token carregado (len '.strlen($this->token).').');
         }
-        // Configura token no helper se já plano
+        
     $this->ensureAuthToken();
         $this->database = new DepixTablesWP();
     }
 
     public function ping() {
-        $url = $this->helpers->api_url . '/ping'; // se não existir build_url, montar manualmente
+        $url = $this->helpers->api_url . '/ping';
         if (!$url) {
             return new WP_Error('depix_no_base', 'API base não configurada');
         }

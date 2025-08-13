@@ -1,6 +1,7 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
 
+// For example and debugging purpose only
 class DepixShortcodes {
 
 	public static function init(): void

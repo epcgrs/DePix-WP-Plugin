@@ -1,7 +1,7 @@
 <?php 
+if (!defined('ABSPATH')) { exit; }
 
 require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
 
 class DepixTablesWP
 {
@@ -36,7 +36,8 @@ class DepixTablesWP
     {
         global $wpdb;
         $table = $wpdb->prefix . 'depixwp_transactions';
-        $tx_id = $data['id'] ?? $data['qrId'] ?? '';
+
+        $tx_id = $data['qrId'] ?? $data['id'] ?? '';
         if ($tx_id === '') {
             error_log('[Depix][DB][Warn] storeTransaction sem id/qrId no payload.');
         }
@@ -76,8 +77,7 @@ class DepixTablesWP
         global $wpdb;
         $table = $wpdb->prefix . 'depixwp_transactions';
 
-        // Normaliza identificador (id ou qrId)
-        if (!isset($data['id']) && isset($data['qrId'])) {
+        if (isset($data['qrId'])) {
             $data['id'] = $data['qrId'];
         }
         if (empty($data['id'])) {
@@ -104,13 +104,26 @@ class DepixTablesWP
             return false;
         }
 
-        return $wpdb->update(
+        $updated = $wpdb->update(
             $table,
             $fields,
             ['tx_id' => sanitize_text_field($data['id'])],
             $formats,
             ['%s']
-        );    
+        );
+        if (!$updated && !empty($data['qrId']) && $data['qrId'] !== $data['id']) {
+            $updated = $wpdb->update(
+                $table,
+                $fields,
+                ['tx_id' => sanitize_text_field($data['qrId'])],
+                $formats,
+                ['%s']
+            );
+        }
+        if (!$updated) {
+            error_log('[Depix][DB][Info] Nenhuma linha atualizada para tx_id='.$data['id']);
+        }
+        return (bool)$updated;    
     }
 
 }

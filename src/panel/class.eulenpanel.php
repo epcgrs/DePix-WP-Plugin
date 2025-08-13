@@ -1,8 +1,6 @@
 <?php
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) { exit; }
 
 if (!class_exists('EulenPanel')) {
     class EulenPanel
@@ -114,9 +112,9 @@ if (!class_exists('EulenPanel')) {
                         if (mb_strlen($body_raw) > 220) {
                             $body_trim .= '…';
                         }
-                        // Cabeçalhos só para debug (não expor em UI)
+                        
                         $headers = wp_remote_retrieve_headers($resp);
-                        // Log detalhado (remover em produção se desejar)
+                        
                         error_log(sprintf('[Depix][Ping] HTTP %d body:"%s"', $code, $body_trim === '' ? '[vazio]' : $body_trim));
                         if ($code >= 200 && $code < 300) {
                             add_settings_error(
@@ -150,7 +148,6 @@ if (!class_exists('EulenPanel')) {
             echo '<div class="wrap">';
             echo '<h1>' . esc_html__('Depix - Configurações', 'depix') . '</h1>';
 
-            // Exibe mensagens (token e ping)
             settings_errors();
 
             echo '<form method="post" action="options.php">';
@@ -164,7 +161,6 @@ if (!class_exists('EulenPanel')) {
             echo '<p>' . esc_html__('Token presente: ', 'depix') . '<strong>' . (self::has_token_saved() ? __('Sim', 'depix') : __('Não', 'depix')) . '</strong></p>';
             echo '<p><strong>' . esc_html__('Registre no BOT Telegram da Eulen este webhook:', 'depix') . '</strong> <code>' . esc_html(rest_url('depix/v1/webhook')) . '</code></p>';
 
-            // Form de Ping
             echo '<h2>' . esc_html__('Teste de Conectividade', 'depix') . '</h2>';
             echo '<form method="post">';
             wp_nonce_field('depix_ping', 'depix_ping_nonce');
@@ -188,40 +184,32 @@ if (!class_exists('EulenPanel')) {
             return self::extract_plain_token_from_option_value($opt);
         }
 
-        /**
-         * Recebe o valor cru armazenado na option (JSON cifrado) e retorna o token plano ou null.
-         * Nunca retorna o JSON cifrado para evitar uso incorreto em Authorization.
-         */
+ 
         public static function extract_plain_token_from_option_value($raw): ?string
         {
             if (empty($raw) || !is_string($raw)) {
                 return null;
             }
-            // Se parece com JWT direto (três partes separadas por ponto) significa que em algum momento foi salvo sem cifrar
+
             if (substr_count($raw, '.') === 2 && strpos($raw, '{') === false) {
-                // Migração: cifrar novamente? Por enquanto retornar direto.
                 return trim($raw);
             }
             $data = json_decode($raw, true);
-            // Caso de double-encoding: option armazenou string JSON dentro de JSON
+
             if (is_string($data) && str_starts_with($data, '{')) {
                 $data = json_decode($data, true);
             }
             if (!is_array($data) || !isset($data['alg'], $data['ct'])) {
-                return null; // formato inesperado
+                return null;
             }
             $plain = self::static_decrypt_struct($data);
-            // Sanitiza resultado
-            // Aceita qualquer token não-vazio (nem todos têm formato JWT com pontos)
+        
             if (is_string($plain) && trim($plain) !== '') {
                 return trim($plain);
             }
             return null;
         }
 
-        /**
-         * Decripta estrutura (array) produzida por encrypt(). Versão estática para ser reutilizada em migrações.
-         */
         public static function static_decrypt_struct(array $data): ?string
         {
             if (($data['alg'] ?? '') !== 'aes-256-gcm') {
@@ -244,9 +232,6 @@ if (!class_exists('EulenPanel')) {
             return $pt === false ? null : $pt;
         }
 
-        /**
-         * Deriva chave (versão estática) para ser usada fora de instâncias.
-         */
         private static function derive_key_static(): string
         {
             $material_parts = [];

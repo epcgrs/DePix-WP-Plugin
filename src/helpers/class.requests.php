@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) { exit; }
 
 class EulenRequest {
 
@@ -40,7 +41,7 @@ class EulenRequest {
         $args = array(
             'headers' => $headers,
         );
-        // Se Content-Type for json, encode
+
         if (isset($headers['Content-Type']) && stripos($headers['Content-Type'], 'application/json') !== false) {
             $args['body'] = is_string($body) ? $body : wp_json_encode($body);
         } else {
