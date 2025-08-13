@@ -26,7 +26,11 @@ class EulenService {
                     return;
                 }
             } else {
-                error_log('[Depix][Auth][Err] Estrutura cifrada inválida ao tentar decriptar.');
+                    error_log('[Depix][Auth][Err] Falha ao decrypt token cifrado.');
+                    return;
+                }
+            } else {
+                error_log('[Depix][Auth][Err] Estrutura cifrada inválida ao tentar decrypt.');
                 return;
             }
         }
