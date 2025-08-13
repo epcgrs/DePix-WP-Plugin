@@ -20,7 +20,7 @@ class EulenWebhook {
         register_rest_route('depix/v1', '/webhook', array(
             'methods' => 'POST',
             'callback' => array($this, 'handleRequest'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'verifyWebhookSignature'),
         ));
     }
 
