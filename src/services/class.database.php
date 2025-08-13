@@ -19,7 +19,7 @@ class DepixTablesWP
                 async TINYINT(1) NOT NULL DEFAULT 0,
                 qr_copy_paste TEXT NULL,
                 qr_image_url TEXT NULL,
-                meta JSON NULL,
+                meta TEXT NULL,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 INDEX (status),
