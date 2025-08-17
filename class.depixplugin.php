@@ -26,7 +26,23 @@ class DepixPlugin {
         self::$webhook = new EulenWebhook();
         self::$webhook->init();
 
+        DepixShortcodes::init();
 
+        add_filter('template_include', [__CLASS__, 'maybe_use_blank_template'], 99);
+    }
+
+    public static function maybe_use_blank_template($template) {
+        if (!function_exists('is_page') || !is_page()) {
+            return $template;
+        }
+        global $post;
+        if ($post && isset($post->post_content) && has_shortcode($post->post_content, 'depix_checkout')) {
+            $blank = DEPIXPLUGIN_PLUGIN_DIR . 'templates/depix-blank-template.php';
+            if (is_readable($blank)) {
+                return $blank;
+            }
+        }
+        return $template;
     }
     
     public static function plugin_activation() {

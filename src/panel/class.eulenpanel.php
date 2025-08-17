@@ -11,31 +11,42 @@ if (!class_exists('EulenPanel')) {
         public function init(): void
         {
             add_action('admin_menu', [$this, 'register_menu']);
-            add_action('admin_menu', [$this, 'register_arch_menu']);
+
             add_action('admin_init', [$this, 'register_settings']);
         }
 
         public function register_menu(): void
         {
-            add_options_page(
-                __('Depix Settings', 'depixplugin'),
-                __('Depix', 'depixplugin'),
+
+
+            $icon_url = '';
+            add_menu_page(
+                __('DePix', 'depixplugin'),
+                __('DePix', 'depixplugin'),
+                'manage_options',
+                'depix-settings',
+                [$this, 'render_page'],
+                $icon_url,
+                56
+            );
+
+            add_action('admin_head', function(){
+                echo '<style>
+
+
+                </style>';
+            });
+
+            add_submenu_page(
+                'depix-settings',
+                __('Configurações', 'depixplugin'),
+                __('Configurações', 'depixplugin'),
                 'manage_options',
                 'depix-settings',
                 [$this, 'render_page']
             );
         }
 
-        public function register_arch_menu(): void
-        {
-            add_options_page(
-                __('Depix Architecture', 'depixplugin'),
-                __('Depix Arch', 'depixplugin'),
-                'manage_options',
-                'depix-architecture',
-                [$this, 'render_arch_page']
-            );
-        }
 
         public function register_settings(): void
         {
@@ -203,57 +214,60 @@ if (!class_exists('EulenPanel')) {
             }
 
             echo '<div class="wrap">';
-            echo '<h1>' . esc_html__('Depix - Configurações', 'depixplugin') . '</h1>';
+            echo '<h1>' . esc_html__('Depix', 'depixplugin') . '</h1>';
+
+            $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'settings';
+            $settings_url = esc_url(admin_url('admin.php?page=depix-settings&tab=settings'));
+            $arch_url     = esc_url(admin_url('admin.php?page=depix-settings&tab=arch'));
+            echo '<h2 class="nav-tab-wrapper">';
+            echo '<a href="' . $settings_url . '" class="nav-tab ' . ($active_tab==='settings'?'nav-tab-active':'') . '">' . esc_html__('Configurações', 'depixplugin') . '</a>';
+            echo '<a href="' . $arch_url . '" class="nav-tab ' . ($active_tab==='arch'?'nav-tab-active':'') . '">' . esc_html__('Arquitetura', 'depixplugin') . '</a>';
+            echo '</h2>';
 
             settings_errors();
 
-            echo '<form method="post" action="options.php">';
-            settings_fields('depix_settings_group');
-            do_settings_sections('depix-settings');
-            submit_button();
-            echo '</form>';
+            if ($active_tab === 'settings') {
+                echo '<form method="post" action="options.php">';
+                settings_fields('depix_settings_group');
+                do_settings_sections('depix-settings');
+                submit_button();
+                echo '</form>';
 
-            echo '<hr />';
-            echo '<h2>' . esc_html__('Status', 'depixplugin') . '</h2>';
-            echo '<p>' . esc_html__('Token presente: ', 'depixplugin') . '<strong>' . (self::has_token_saved() ? __('Sim', 'depixplugin') : __('Não', 'depixplugin')) . '</strong></p>';
-            $secret_present = !empty(get_option(self::OPTION_WEBHOOK_SECRET, ''));
-            echo '<p>' . esc_html__('Webhook secret presente: ', 'depixplugin') . '<strong>' . ($secret_present ? __('Sim', 'depixplugin') : __('Não', 'depixplugin')) . '</strong></p>';
-            echo '<p><strong>' . esc_html__('Registre no BOT Telegram da Eulen este webhook:', 'depixplugin') . '</strong> <code>' . esc_html(rest_url('depix/v1/webhook')) . '</code></p>';
+                echo '<hr />';
+                echo '<h2>' . esc_html__('Status', 'depixplugin') . '</h2>';
+                echo '<p>' . esc_html__('Token presente: ', 'depixplugin') . '<strong>' . (self::has_token_saved() ? __('Sim', 'depixplugin') : __('Não', 'depixplugin')) . '</strong></p>';
+                $secret_present = !empty(get_option(self::OPTION_WEBHOOK_SECRET, ''));
+                echo '<p>' . esc_html__('Webhook secret presente: ', 'depixplugin') . '<strong>' . ($secret_present ? __('Sim', 'depixplugin') : __('Não', 'depixplugin')) . '</strong></p>';
+                echo '<p><strong>' . esc_html__('Registre no BOT Telegram da Eulen este webhook:', 'depixplugin') . '</strong> <code>' . esc_html(rest_url('depix/v1/webhook')) . '</code></p>';
 
-            echo '<h2>' . esc_html__('Teste de Conectividade', 'depixplugin') . '</h2>';
-            echo '<form method="post">';
-            wp_nonce_field('depix_ping', 'depix_ping_nonce');
-            echo '<input type="hidden" name="depix_action" value="ping" />';
-            echo '<p><button type="submit" class="button button-secondary">' . esc_html__('Fazer Ping na API', 'depixplugin') . '</button></p>';
-            echo '<p class="description">' . esc_html__('Executa uma chamada /ping para verificar conectividade e autenticação.', 'depixplugin') . '</p>';
-            echo '</form>';
-
-            echo '</div>';
-        }
-
-        public function render_arch_page(): void
-        {
-            if (!current_user_can('manage_options')) {
-                wp_die(__('Sem permissão.', 'depixplugin'));
-            }
-
-            $mmd_path = DEPIXPLUGIN_PLUGIN_DIR . 'docs/architecture.mmd';
-            $mmd = '';
-            if (is_readable($mmd_path)) {
-                $mmd = file_get_contents($mmd_path);
+                echo '<h2>' . esc_html__('Teste de Conectividade', 'depixplugin') . '</h2>';
+                echo '<form method="post">';
+                wp_nonce_field('depix_ping', 'depix_ping_nonce');
+                echo '<input type="hidden" name="depix_action" value="ping" />';
+                echo '<p><button type="submit" class="button button-secondary">' . esc_html__('Fazer Ping na API', 'depixplugin') . '</button></p>';
+                echo '<p class="description">' . esc_html__('Executa uma chamada /ping para verificar conectividade e autenticação.', 'depixplugin') . '</p>';
+                echo '</form>';
             } else {
-                $mmd = "graph TD; A[Arquivo docs/architecture.mmd não encontrado];";
+
+                $mmd_path = DEPIXPLUGIN_PLUGIN_DIR . 'docs/architecture.mmd';
+                $mmd = '';
+                if (is_readable($mmd_path)) {
+                    $mmd = file_get_contents($mmd_path);
+                } else {
+                    $mmd = "graph TD; A[Arquivo docs/architecture.mmd não encontrado];";
+                }
+                echo '<div class="wrap">';
+                echo '<p class="description">' . esc_html__('Diagrama renderizado a partir de docs/architecture.mmd.', 'depixplugin') . '</p>';
+                echo '<div class="mermaid" style="background:#fff;padding:12px;border:1px solid #ddd;overflow:auto;">' . "\n" . $mmd . "\n" . '</div>';
+                echo '<p><small>' . esc_html__('Edite docs/architecture.mmd e recarregue para atualizar.', 'depixplugin') . '</small></p>';
+                echo '<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>';
+                echo '<script>mermaid.initialize({startOnLoad:true});</script>';
+                echo '</div>';
             }
 
-            echo '<div class="wrap">';
-            echo '<h1>' . esc_html__('Depix - Arquitetura', 'depixplugin') . '</h1>';
-            echo '<p class="description">' . esc_html__('O diagrama é renderizado a partir do arquivo docs/architecture.mmd dentro do plugin.', 'depixplugin') . '</p>';
-            echo '<div class="mermaid" style="background:#fff;padding:12px;border:1px solid #ddd;overflow:auto;">' . "\n" . $mmd . "\n" . '</div>';
-            echo '<p><small>' . esc_html__('Edite o arquivo docs/architecture.mmd e recarregue a página para atualizar o diagrama.', 'depixplugin') . '</small></p>';
-            echo '<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>';
-            echo '<script>mermaid.initialize({startOnLoad:true});</script>';
             echo '</div>';
         }
+
 
         public static function has_token_saved(): bool
         {
