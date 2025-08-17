@@ -40,6 +40,7 @@ class EulenWebhook {
             }
         }
 
+        // Sem secret configurado: aceitar provisoriamente, mas alertar em log
         if (!$secret) {
             return new WP_Error('depix_webhook_unconfigured', 'webhook secret missing', array('status' => 503));
         }

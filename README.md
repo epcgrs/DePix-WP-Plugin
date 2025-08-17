@@ -48,6 +48,13 @@ $resp = $service->deposit(1000); // R$ 10,00
 // Parse $resp (JSON) for response.id, qrCopyPaste, qrImageUrl
 ```
 
+### Errors and async handling (start Pix)
+- This plugin forwards upstream errors verbatim:
+  - HTTP 400 with `{ "error": "<raw-message>" }` when upstream returns `response.errorMessage`.
+  - HTTP 202 with `{ "async": true, "expiration", "urlResponse" }` when server is busy.
+  - HTTP 200 with `{ txId, brcode, qrImageUrl }` on success.
+- Front (`assets/checkout/script.js`): any `!ok` or `202/async` shows the raw text in `#pix-status` and reveals the "Gerar novo QR" retry button.
+
 ## Database
 - Table: `{prefix}_depixwp_transactions`
 - Columns: `id, tx_id (unique), amount_cents, status, async, qr_copy_paste, qr_image_url, meta, created_at, updated_at`.
@@ -58,6 +65,38 @@ $resp = $service->deposit(1000); // R$ 10,00
 - Handler: `EulenWebhook::handleRequest`
 - Permission: `verifyWebhookSignature` (currently returns `true`; implement signature/HMAC validation for production).
 - Behavior: normalizes `id/qrId`, updates or inserts the transaction, returns `{ ok, final }`.
+
+### How to register
+- In your private Telegram channel with Eulen, run: `/registerwebhook deposit https://your-site/wp-json/depix/v1/webhook <secret>`.
+- Header expected: `Authorization: Basic <secret>`.
+- Settings → Depix allows saving the webhook secret encrypted.
+
+### Example body
+```json
+{
+  "bankTxId": "fitbank_...",
+  "blockchainTxID": "4c7dff78...",
+  "payerName": "John Doe",
+  "payerEUID": "EU123...",
+  "payerTaxNumber": "12345678901",
+  "expiration": "2025-03-05T14:33:56-03:00",
+  "pixKey": "68fa...",
+  "qrId": "01954e29d3337e388d5d1cb846b0d053",
+  "status": "depix_sent",
+  "valueInCents": 12345
+}
+```
+
+### Status mapping (UI)
+- waiting: `created, pending, pix_pending, processing`
+- approved: `paid, completed, confirmed, success, depix_sent`
+- expired: `expired`
+- failed: `canceled, error`
+
+### Best practices
+- Validate `Authorization` and respond in ≤ 15s with 200.
+- If webhook fails, fallback to deposit-status with low frequency.
+- Official docs: [Webhook – Pix2DePix API](https://pix2depix.apidog.io/-webhook-849106m0)
 
 ## Shortcode (optional)
 - `[depix_test]` for demo/testing: renders a form, performs `deposit`, shows QR and starts status polling.

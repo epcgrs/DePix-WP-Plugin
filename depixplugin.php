@@ -1,7 +1,18 @@
 <?php
+/**
+* @package Depix WP Plugin
+*/
 
-
-
+/*
+Plugin Name: Depix WP Plugin
+Description: An open-source Wordpress plugin to use DePix on Wordpress
+Version: 0.0.1
+Requires at least: 5.8
+Requires PHP: 7.4
+Author: Pedro, MZero
+License: GPLv2 or later
+Text Domain: depixplugin
+*/
 
 if ( ! function_exists( 'add_action' ) ) {
 	echo 'You cannot access this file directly.';

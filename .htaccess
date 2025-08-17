@@ -1,21 +1,25 @@
 Options -Indexes
 
-
+# Bloqueia execução de arquivos PHP nos subdiretórios por segurança,
+# mas mantém o arquivo principal do plugin acessível se necessário.
 <FilesMatch "\.(php|phtml)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
+# Libera o arquivo principal do plugin
 <FilesMatch "^depixplugin\.php$">
     Order allow,deny
     Allow from all
 </FilesMatch>
 
+# Libera assets estáticos
 <FilesMatch "\.(css|js|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|eot)$">
     Order allow,deny
     Allow from all
 </FilesMatch>
 
+# Protege arquivos sensíveis
 <FilesMatch "\.(htaccess|htpasswd|ini|log|conf|env)$">
     Order allow,deny
     Deny from all
