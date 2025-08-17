@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Plugin blank template for DePix checkout
+ * Renders only the page content (shortcode), without theme header/footer/sidebars
+ */
 if (!defined('ABSPATH')) { exit; }
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
