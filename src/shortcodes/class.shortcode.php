@@ -1,6 +1,7 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
 
+// For example and debugging purpose only
 class DepixShortcodes {
 
 	public static function init(): void
@@ -94,7 +95,7 @@ class DepixShortcodes {
 
 	public static function render_checkout($atts = [], $content = ''): string
 	{
-
+		// Autônomo: referencia assets copiados para o plugin (idênticos)
 		$plugin_file = DEPIXPLUGIN_PLUGIN_DIR . 'depixplugin.php';
 		wp_enqueue_style('depix-checkout-css', plugins_url('assets/checkout/main.css', $plugin_file), [], null);
 		wp_enqueue_script('depix-checkout-script', plugins_url('assets/checkout/script.js', $plugin_file), [], null, true);
@@ -479,6 +480,7 @@ class DepixShortcodes {
 					<button type="button" id="pix-copy" class="copy-icon" title="Copiar"></button>
 				  </div>
 				  <div id="pix-status" class="pix-status waiting">Aguardando pagamento...</div>
+				  <button type="button" id="pix-retry" class="eulen-button-style" style="display:none; margin-top:10px;">Gerar novo QR</button>
 				  <button type="button" id="pix-simulate-webhook" class="eulen-button-style" style="display:none; margin-top:10px;">Simular pagamento (webhook)</button>
 				</div>
 			  </div>
@@ -486,6 +488,28 @@ class DepixShortcodes {
 				<button type="button" class="prev-btn">
 				  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
 				</button>
+			  </div>
+			</div>
+
+			<!-- STEP 5: Sucesso / Tutorial -->
+			<div class="form-step" data-step="5" style="text-align: center;">
+			  <div class="step-content-wrapper">
+				<div class="success-check" aria-hidden="true">
+					<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+						<circle cx="32" cy="32" r="30" fill="#10b981" opacity="0.12" />
+						<path d="M18 33l8 8 20-20" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+				</div>
+				<h2 style="margin-top:12px;">Tudo certo!</h2>
+				<p id="success-hint" class="message-suggestion">Pagamento confirmado.</p>
+				<div id="success-video" class="success-video" style="display:none; margin-top:14px;">
+					<div class="video-responsive">
+						<iframe id="success-video-iframe" src="" title="Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+					</div>
+				</div>
+			  </div>
+			  <div class="button-container">
+				<!-- Sem botões de navegação neste passo -->
 			  </div>
 			</div>
 		  </form>

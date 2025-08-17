@@ -1,4 +1,7 @@
-
+/**
+ * Adaptado de contact-form/script.js
+ * - Ajuste: carrega config via CFTheme.configUrl
+ */
 let debugLogs = true;
 const log = (...args) => { if (debugLogs) console.log(...args); };
 const warn = (...args) => { if (debugLogs) console.warn(...args); };
@@ -105,21 +108,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     render: () => renderFromState()
   };
 
+  // Centraliza o template visual do botão "Próximo" em um único lugar
   function createNextButtonTemplate(button) {
     if (!button) return;
-
+    // Preserva classes existentes e adiciona classes de navegação comuns
     button.classList.add('nav-btn', 'nav-btn--next');
-
+    // Acessibilidade
     button.setAttribute('aria-label', 'Próximo');
     button.setAttribute('title', 'Próximo');
-
+    // Limpa qualquer conteúdo anterior (texto "Próximo") e injeta o SVG de seta para a direita
     button.innerHTML = '';
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('fill', 'none');
     const path = document.createElementNS(svgNS, 'path');
-
+    // Seta para a direita (espelha a forma do botão Voltar)
     path.setAttribute('d', 'M8.5 5l7 7-7 7');
     path.setAttribute('stroke-linecap', 'round');
     path.setAttribute('stroke-linejoin', 'round');
@@ -127,13 +131,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     button.appendChild(svg);
   }
 
+  // Aplica o template a todos os botões Próximo existentes no DOM
   nextButtons.forEach((btn) => createNextButtonTemplate(btn));
 
+  // Helper para estado de carregamento sem alterar conteúdo do botão (apenas acessibilidade/estilo)
   function setNextButtonLoadingState(button, isLoading) {
     if (!button) return;
     button.classList.toggle('is-loading', !!isLoading);
     button.toggleAttribute('aria-busy', !!isLoading);
-
+    // Mantém o ícone; apenas ajusta label/title para leitores de tela
     if (isLoading) {
       button.setAttribute('aria-label', 'Criando...');
       button.setAttribute('title', 'Criando...');
@@ -172,7 +178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('wallet-address')?.addEventListener('input', (e) => {
     const v = (e.target.value || '').trim();
     setState({ wallet: v });
-
+    // validação básica cliente: CT... (Base58) ou lq1... (blech32)
     const isCT = /^CT[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{48,}$/.test(v);
     const islq = /^lq1[023456789ac-hj-np-z]{20,}$/.test(v.toLowerCase());
     const err = document.getElementById('walletAddress-error');
@@ -180,6 +186,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     else { if (err) { err.classList.remove('visible'); } e.target.classList.remove('invalid'); }
   });
 
+  // Conversão BRL -> BTC (CoinGecko) e exibição de taxas, idêntico ao tema
   (function attachBrlConversion(){
     const amountInput = document.getElementById('desiredAmountBRL');
     const outBtc = document.getElementById('convertedAmountBTC');
@@ -212,8 +219,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         btcRow?.classList.add('loading');
         const price = await getBtcPriceBRL();
         btcRow?.classList.remove('loading');
-        const btc = price ? (brlNet / price) : 0;
-        outBtc.value = price ? btc.toFixed(8) : '';
+        const spread = (typeof config?.spreadBtc === 'number') ? Number(config.spreadBtc) : 0.015; // 1.5% spread
+        const btcGross = price ? (brlNet / price) : 0;
+        const btcNet = btcGross * (1 - spread);
+        outBtc.value = price ? btcNet.toFixed(8) : '';
         const feesEl = getFeesNote();
         if (feesEl){
           if (price){ const brlFees = brlRaw - brlNet; const btcFees = brlFees / price; feesEl.innerHTML = `Taxa: ${btcFees.toFixed(8)} BTC <span class="fee-expl">(R$1 transação + 5%)</span>`; }
@@ -254,8 +263,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (radio.id === 'category-onboarding' && radio.checked) setState({ asset:'btc', category:'onboarding' });
       if (radio.id === 'category-security' && radio.checked) setState({ asset:'depix', category:'security' });
 
+      // Avança para a etapa de valor como no tema (sem alterar outras lógicas)
       try {
-
+        // Atualiza o controle de fluxo para os botões Voltar dependerem da categoria correta
         if (radio.id === 'category-onboarding' && radio.checked) {
           selectedCategory = 'onboarding';
           formData.category = 'onboarding';
@@ -517,6 +527,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => { copyBtn.title = prevTitle || 'Copiar'; copyBtn.classList.remove('copied'); }, 1200);
     };
 
+    // Dev helper: botão de simulação para marcar como sucesso
+    try {
+      if (simulateBtn && (debugLogs === true)) {
+        simulateBtn.style.display = '';
+        simulateBtn.onclick = () => { setStatus('approved'); };
+      } else if (simulateBtn) {
+        simulateBtn.style.display = 'none';
+        simulateBtn.onclick = null;
+      }
+    } catch(_){}
+
     initializePixSession();
 
     async function initializePixSession(){
@@ -526,17 +547,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       log('[PIX][start] url=', startUrl, 'payload=', { amountBRL: valueBRL, network: state.network, wallet: state.wallet });
       try { document.querySelector('.qr-box')?.classList.add('loading'); } catch(_){}
       try {
+        const retryBtn = document.getElementById('pix-retry');
+        if (retryBtn) retryBtn.style.display = 'none';
         const res = await fetch(startUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amountBRL: valueBRL, network: state.network, wallet: state.wallet }) });
         log('[PIX][start] http=', res.status, res.statusText);
         const data = await res.json().catch(() => ({}));
         log('[PIX][start] json=', data);
-        if (!res.ok || !data || !data.txId) throw new Error('invalid start response');
+        if (res.status === 202 || data?.async === true) { showPixError(data); return; }
+        if (!res.ok) { showPixError(data); return; }
+        if (!data || !data.txId) { showPixError('invalid start response'); return; }
         currentTxId = data.txId;
         applyPayload({ brcode: data.brcode, qrImageUrl: data.qrImageUrl });
         setStatus('waiting');
         attachStatusStream(currentTxId);
       } catch (err) {
         warn('[PIX][start][error]', err);
+        showPixError(err && err.message ? err.message : String(err));
       }
       finally { try { document.querySelector('.qr-box')?.classList.remove('loading'); } catch(_){} }
     }
@@ -558,6 +584,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    function showPixError(raw){
+      const msg = (raw && typeof raw === 'object')
+        ? (raw.error ? String(raw.error) : JSON.stringify(raw))
+        : (typeof raw === 'string' ? raw : 'Falha ao gerar QR. Tente novamente.');
+      try { qrImg.removeAttribute('src'); } catch(_){ }
+      setStatus('waiting');
+      statusEl.textContent = msg;
+      const retryBtn = document.getElementById('pix-retry');
+      if (retryBtn) {
+        retryBtn.style.display = '';
+        retryBtn.onclick = () => { retryBtn.style.display = 'none'; initializePixSession(); };
+      }
+    }
+
     function setStatus(status){
       log('[PIX][status]', status);
       if (!status) return;
@@ -565,7 +605,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (status === 'approved') {
         statusEl.classList.add('approved');
         statusEl.textContent = 'Pagamento confirmado! Enviando ativos...';
-        setTimeout(() => { statusEl.textContent = 'Tudo certo! Transferência para sua carteira Liquid concluída.'; }, 2000);
+        setTimeout(() => {
+          // Ir para o slide de sucesso (5)
+          try {
+            const stepsEls = Array.from(document.querySelectorAll('.form-step'));
+            const idx = stepsEls.findIndex(s => s.dataset.step === '5');
+            if (idx !== -1) {
+              // Configurar tutorial quando for fluxo BTC
+              const isBtc = (window.EulenState?.get?.()?.asset || document.documentElement.classList.contains('asset-btc')) ? true : false;
+              const vWrap = document.getElementById('success-video');
+              const iframe = document.getElementById('success-video-iframe');
+              const hint = document.getElementById('success-hint');
+              if (isBtc && vWrap && iframe) {
+                vWrap.style.display = '';
+                if (hint) hint.textContent = 'Veja como transformar DePix em Bitcoin pela SideSwap:';
+                // URL do tutorial (pode ser ajustada no futuro)
+                iframe.src = 'https://www.youtube.com/embed/VIDEO_ID_AQUI?rel=0&modestbranding=1';
+              } else {
+                if (vWrap) vWrap.style.display = 'none';
+                if (iframe) iframe.src = '';
+                if (hint) hint.textContent = 'Pagamento confirmado com sucesso.';
+              }
+              // Mostrar step 5
+              const allSteps = Array.from(document.querySelectorAll('.form-step'));
+              allSteps.forEach((step, i) => step.classList.toggle('active', i === idx));
+              // Completar barra
+              try { document.querySelector('.progress-bar .progress').style.width = '100%'; } catch(_){}
+            }
+          } catch(_){}
+        }, 600);
       } else if (status === 'waiting') {
         statusEl.classList.add('waiting');
         statusEl.textContent = 'Aguardando pagamento...';
@@ -621,6 +689,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }, 2000);
     }
 
+    // (simulações removidas)
   }
 
   document.querySelectorAll('.next-btn').forEach(button => {
@@ -675,7 +744,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       alert('Obrigado pelo seu interesse! (Uso Próprio Flow)'); form.reset(); selectedCategory = ''; Object.keys(formData).forEach(key => delete formData[key]); showStep(0); const firstBtn = steps[0].querySelector('.next-btn'); if (firstBtn) { firstBtn.disabled = true; firstBtn.classList.add('disabled'); } return;
     }
     const submitBtns = form.querySelectorAll('.submit-btn'); submitBtns.forEach(btn => btn.disabled = true);
-
+    // (simulação removida)
     submitBtns.forEach(btn => btn.disabled = false);
   };
 
@@ -715,7 +784,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const value = this.value.trim(); let isValid = true;
         if (this.required && !value) isValid = false;
         else if (this.type === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value)) isValid = false;
-        else if ((this.id === 'fullName' || this.id === 'telegramUser') && value.length < 3) isValid = false;
+        else if ((this.id === 'fullName' || this.id === 'telegramUser') && this.value.length < 3) isValid = false;
         if (isValid) { this.classList.remove('invalid'); const errorId = `${this.id || this.name}-error`; const errorElement = document.getElementById(errorId); if (errorElement) { errorElement.classList.remove('visible'); errorElement.style.display = 'none'; } }
         const stepElement = this.closest('.form-step'); const stepIndex = steps.indexOf(stepElement); if (stepIndex > -1) updateNextButtonState(stepIndex);
       });
