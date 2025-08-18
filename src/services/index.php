@@ -5,12 +5,12 @@ if (!function_exists('depix_is_valid_liquid_address')) {
     function depix_is_valid_liquid_address($address) {
         $addr = is_string($address) ? trim($address) : '';
         if ($addr === '') { return false; }
-        // Confidential blech32/bech32m (lq1...)
+        
         $low = strtolower($addr);
         if (preg_match('/^lq1[023456789ac-hj-np-z]{20,}$/', $low)) {
             return true;
         }
-        // Confidential Base58 (long, no 0OlI)
+        
         if (preg_match('/^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{50,}$/', $addr)) {
             return true;
         }
@@ -18,11 +18,11 @@ if (!function_exists('depix_is_valid_liquid_address')) {
     }
 }
 
-// REST endpoint para criar depósito a partir do tema (frontend)
+ 
 add_action('rest_api_init', function () {
     register_rest_route('depix/v1', '/deposit', array(
         'methods'  => 'POST',
-        'permission_callback' => '__return_true', // TODO: trocar por verificação de nonce
+        'permission_callback' => '__return_true',
         'callback' => function (WP_REST_Request $req) {
             $data = json_decode($req->get_body(), true);
             $amount = isset($data['amountInCents']) ? (int)$data['amountInCents'] : 0;
@@ -61,14 +61,14 @@ add_action('rest_api_init', function () {
     ));
 });
 
-// Reescritas para compatibilidade com o tema (sem criar pastas físicas): /api/pix/start e /api/pix/status
+ 
 add_action('init', function () {
     add_rewrite_tag('%depix_api%', '([^&]+)');
     add_rewrite_rule('^api/pix/start/?$', 'index.php?depix_api=pix_start', 'top');
     add_rewrite_rule('^api/pix/status/?$', 'index.php?depix_api=pix_status', 'top');
 });
 
-// Garante que a query var seja reconhecida
+ 
 add_filter('query_vars', function ($vars) {
     $vars[] = 'depix_api';
     return $vars;
@@ -76,7 +76,7 @@ add_filter('query_vars', function ($vars) {
 
 add_action('template_redirect', function () {
     $action = get_query_var('depix_api');
-    // Fallback: se rewrite ainda não foi salvo, detecta pela REQUEST_URI
+    
     if (!$action && isset($_SERVER['REQUEST_URI'])) {
         $uri = $_SERVER['REQUEST_URI'];
         if (preg_match('~/(?:index\.php/)?api/pix/start/?$~', $uri)) {
@@ -87,13 +87,13 @@ add_action('template_redirect', function () {
     }
     if (!$action) { return; }
 
-    // Garantir JSON
+    
     nocache_headers();
     header('Content-Type: application/json; charset=utf-8');
 
     if ($action === 'pix_start' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         global $wp_query; if (isset($wp_query)) { $wp_query->is_404 = false; }
-        // Content-Type must be JSON
+        
         $ct = isset($_SERVER['CONTENT_TYPE']) ? strtolower((string) $_SERVER['CONTENT_TYPE']) : '';
         if ($ct === '' && function_exists('getallheaders')) {
             $h = getallheaders(); $ct = strtolower((string)($h['Content-Type'] ?? $h['content-type'] ?? ''));
@@ -101,7 +101,7 @@ add_action('template_redirect', function () {
         if (strpos($ct, 'application/json') === false) {
             status_header(400); echo wp_json_encode(array('error' => 'invalid_content_type')); exit;
         }
-        // Simple rate limit per IP (1 request / 3s)
+        
         $ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0] : ($_SERVER['REMOTE_ADDR'] ?? '');
         $ip = trim((string)$ip);
         if ($ip !== '') {
@@ -115,7 +115,7 @@ add_action('template_redirect', function () {
         $network   = isset($data['network']) ? (string)$data['network'] : '';
         $wallet    = isset($data['wallet']) ? trim((string)$data['wallet']) : '';
         if ($amountBRL <= 0) { status_header(400); echo wp_json_encode(array('error' => 'invalid_amount_brl')); exit; }
-        // Min/Max guardrails (BRL)
+        
         $minBrl = 5; $maxBrl = 20000;
         if ($amountBRL < $minBrl) { status_header(400); echo wp_json_encode(array('error' => 'amount_below_min', 'min' => $minBrl)); exit; }
         if ($amountBRL > $maxBrl) { status_header(400); echo wp_json_encode(array('error' => 'amount_above_max', 'max' => $maxBrl)); exit; }
@@ -127,7 +127,7 @@ add_action('template_redirect', function () {
                 echo wp_json_encode(array('error' => 'invalid_liquid_address'));
                 exit;
             }
-            // Endereço destino no asset DePix (Liquid)
+            
             $opts['depixAddress'] = $wallet;
         }
         $service = new EulenService();
@@ -136,13 +136,13 @@ add_action('template_redirect', function () {
         $body = is_array($resp) ? ($resp['body'] ?? '') : $resp;
         $json = json_decode($body, true);
         if (!is_array($json)) { status_header(502); echo wp_json_encode(array('error' => 'invalid_upstream_json')); exit; }
-        // Erro padrão da API: { response: { errorMessage }, async:false }
+        
         if (isset($json['response']) && is_array($json['response']) && isset($json['response']['errorMessage'])) {
             status_header(400);
             echo wp_json_encode(array('error' => (string)$json['response']['errorMessage']));
             exit;
         }
-        // Modo assíncrono (ocupado)
+        
         if (isset($json['async']) && $json['async'] === true) {
             status_header(202);
             echo wp_json_encode(array(
@@ -152,7 +152,7 @@ add_action('template_redirect', function () {
             ));
             exit;
         }
-        // Sucesso
+        
         status_header(200);
         echo wp_json_encode(array(
             'txId' => isset($json['response']['id']) ? $json['response']['id'] : null,

@@ -1,7 +1,6 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
 
-// For example and debugging purpose only
 class DepixShortcodes {
 
 	public static function init(): void
@@ -95,7 +94,6 @@ class DepixShortcodes {
 
 	public static function render_checkout($atts = [], $content = ''): string
 	{
-		// Autônomo: referencia assets copiados para o plugin (idênticos)
 		$plugin_file = DEPIXPLUGIN_PLUGIN_DIR . 'depixplugin.php';
 		wp_enqueue_style('depix-checkout-css', plugins_url('assets/checkout/main.css', $plugin_file), [], null);
 		wp_enqueue_script('depix-checkout-script', plugins_url('assets/checkout/script.js', $plugin_file), [], null, true);
@@ -108,7 +106,6 @@ class DepixShortcodes {
 		ob_start();
 		?>
 		<div class="depix-root cf-mode-light">
-		<!-- Templates necessários (copiados do tema) -->
 		<template id="meeting-consent-template">
 			<div class="info-box" style="margin-top: 40px; max-width: 500px; margin-left: auto; margin-right: auto;">
 				<div style="text-align: center;">
@@ -150,7 +147,6 @@ class DepixShortcodes {
 		  </div>
 
 		  <form id="eulen-form">
-			<!-- Estado persistente do fluxo -->
 			<input type="hidden" name="state_asset" value="">
 			<input type="hidden" name="state_category" value="">
 			<input type="hidden" name="state_amount_brl" value="">
@@ -158,7 +154,6 @@ class DepixShortcodes {
 			<input type="hidden" name="state_network" value="">
 			<input type="hidden" name="state_wallet" value="">
 			<input type="hidden" name="state_profileType" value="">
-			<!-- STEP 1: Welcome & Category -->
 			<div class="form-step active" data-step="1">
 			  <div class="step-content-wrapper">
 				<h2><?php echo esc_html( get_bloginfo('name') ); ?></h2>
@@ -179,7 +174,6 @@ class DepixShortcodes {
 						</label>
 					  </div>
 					  
-					  <!-- Step: Amount input (new) -->
 					  
 					</div>
 					<div class="error-message" id="category-error">Por favor, selecione uma opção.</div>
@@ -187,11 +181,9 @@ class DepixShortcodes {
 				</div>
 			  </div>
 			  <div class="button-container">
-				<!-- Botão Removido -->
 			  </div>
 			</div>
 
-			<!-- STEP 2: Amount (BRL -> BTC) -->
 			<div class="form-step" data-step="2" data-kind="amount">
 			  <div class="step-content-wrapper">
 				<h2>Quanto você quer comprar?</h2>
@@ -220,7 +212,6 @@ class DepixShortcodes {
 			  </div>
 			</div>
 
-			<!-- STEP 2-DEPX: Amount (BRL -> DPX) -->
 			<div class="form-step" data-step="2-depix" data-kind="amount-depix">
 			  <div class="step-content-wrapper">
 				<h2>Quanto você quer comprar?</h2>
@@ -248,28 +239,11 @@ class DepixShortcodes {
 			  </div>
 			</div>
 
-			<!-- STEP 2.6: Selecionar rede (apenas dois quadrados) -->
 			<div class="form-step" data-step="2.6">
 			  <div class="step-content-wrapper">
 				<h2>Para onde enviaremos?</h2>
 				<div class="step-state-chips"></div>
-				<!-- BLOCO CONFIRM VALORES (comentado a pedido) -->
-				<!--
-				<div class="amount-stack" id="confirm-amounts">
-				  <label for="confirmBRL">Você paga:</label>
-				  <div class="amount-row">
-					<span class="prefix currency-brl">R$</span>
-					<input id="confirmBRL" type="text" placeholder="0" readonly disabled tabindex="-1" aria-readonly="true" aria-disabled="true">
-				  </div>
-				  <label for="confirmOut">Você recebe:</label>
-				  <div class="amount-row">
-					<span class="prefix" id="confirmPrefix">₿</span>
-					<input id="confirmOut" type="text" placeholder="0" readonly disabled tabindex="-1" aria-readonly="true" aria-disabled="true">
-					<span class="suffix" id="confirmSuffix">BTC</span>
-				  </div>
-				  <div class="amount-fees" id="confirmFees">Taxa: <span class="fee-expl">(R$1 transação + 5%)</span></div>
-				</div>
-				-->
+				
 
 				<div class="welcome-content">
 				  <div class="radio-group category-options">
@@ -297,7 +271,6 @@ class DepixShortcodes {
 			  </div>
 			</div>
 
-			<!-- STEP 2.7: Endereço da carteira -->
 			<div class="form-step" data-step="2.7">
 			  <div class="step-content-wrapper">
 				<h2>Endereço da carteira</h2>
@@ -315,7 +288,6 @@ class DepixShortcodes {
 			  </div>
 			</div>
 
-			<!-- STEP 2.5: General User Info -->
 			<div class="form-step" data-step="2.5">
 			  <div class="step-content-wrapper">
 				<div id="user-info-container"></div>
@@ -328,7 +300,6 @@ class DepixShortcodes {
 			  </div>
 			</div>
 
-			<!-- STEP 3: Conditional Flows -->
 			<div class="form-step" data-step="3" data-profile="p2p">
 			  <div class="step-content-wrapper">
 				<div id="p2p-meeting-consent"></div>
@@ -409,7 +380,7 @@ class DepixShortcodes {
 				  </div>
 				  <div id="search-results" class="search-results-container"></div>
 				</div>
-				<!-- bloco de contato/telegram removido -->
+				
 			  </div>
 			  <div class="button-container">
 				<button type="button" class="prev-btn">
@@ -490,7 +461,6 @@ class DepixShortcodes {
 			  </div>
 			</div>
 
-			<!-- STEP 5: Sucesso / Tutorial -->
 			<div class="form-step" data-step="5" style="text-align: center;">
 			  <div class="step-content-wrapper">
 				<div class="success-check" aria-hidden="true">
@@ -508,7 +478,7 @@ class DepixShortcodes {
 				</div>
 			  </div>
 			  <div class="button-container">
-				<!-- Sem botões de navegação neste passo -->
+				
 			  </div>
 			</div>
 		  </form>
