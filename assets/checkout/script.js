@@ -511,7 +511,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const qrImg = document.getElementById('pix-qr-image');
     const copyBtn = document.getElementById('pix-copy');
     const statusEl = document.getElementById('pix-status');
-    const simulateBtn = document.getElementById('pix-simulate-webhook');
+    const simulateBtn = null;
 
     if (!brcodeInput || !qrImg || !copyBtn || !statusEl) return;
 
@@ -527,16 +527,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => { copyBtn.title = prevTitle || 'Copiar'; copyBtn.classList.remove('copied'); }, 1200);
     };
 
-    // Dev helper: botão de simulação para marcar como sucesso
-    try {
-      if (simulateBtn && (debugLogs === true)) {
-        simulateBtn.style.display = '';
-        simulateBtn.onclick = () => { setStatus('approved'); };
-      } else if (simulateBtn) {
-        simulateBtn.style.display = 'none';
-        simulateBtn.onclick = null;
-      }
-    } catch(_){}
+    // Simulação desativada em produção
 
     initializePixSession();
 
@@ -612,15 +603,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             const idx = stepsEls.findIndex(s => s.dataset.step === '5');
             if (idx !== -1) {
               // Configurar tutorial quando for fluxo BTC
-              const isBtc = (window.EulenState?.get?.()?.asset || document.documentElement.classList.contains('asset-btc')) ? true : false;
+              const currentAsset = (window.EulenState && typeof window.EulenState.get === 'function') ? (window.EulenState.get().asset || '') : '';
+              const isBtc = (currentAsset === 'btc') || document.documentElement.classList.contains('asset-btc');
               const vWrap = document.getElementById('success-video');
               const iframe = document.getElementById('success-video-iframe');
               const hint = document.getElementById('success-hint');
               if (isBtc && vWrap && iframe) {
                 vWrap.style.display = '';
                 if (hint) hint.textContent = 'Veja como transformar DePix em Bitcoin pela SideSwap:';
-                // URL do tutorial (pode ser ajustada no futuro)
-                iframe.src = 'https://www.youtube.com/embed/VIDEO_ID_AQUI?rel=0&modestbranding=1';
+                // URL do tutorial
+                iframe.src = 'https://www.youtube.com/embed/rbxdFbSVOJk?rel=0&modestbranding=1';
               } else {
                 if (vWrap) vWrap.style.display = 'none';
                 if (iframe) iframe.src = '';

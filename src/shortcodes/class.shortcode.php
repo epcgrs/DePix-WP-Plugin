@@ -161,7 +161,7 @@ class DepixShortcodes {
 			<!-- STEP 1: Welcome & Category -->
 			<div class="form-step active" data-step="1">
 			  <div class="step-content-wrapper">
-				<h2>Bem-vindo à P2P.APP.BR</h2>
+				<h2><?php echo esc_html( get_bloginfo('name') ); ?></h2>
 				<p class="category-prompt">O que você quer comprar?</p>
 				<div style="margin-top: 50px" class="welcome-content">
 				  <div class="category-selection">
@@ -481,7 +481,6 @@ class DepixShortcodes {
 				  </div>
 				  <div id="pix-status" class="pix-status waiting">Aguardando pagamento...</div>
 				  <button type="button" id="pix-retry" class="eulen-button-style" style="display:none; margin-top:10px;">Gerar novo QR</button>
-				  <button type="button" id="pix-simulate-webhook" class="eulen-button-style" style="display:none; margin-top:10px;">Simular pagamento (webhook)</button>
 				</div>
 			  </div>
 			  <div class="button-container">
