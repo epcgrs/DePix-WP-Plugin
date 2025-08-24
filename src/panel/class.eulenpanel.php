@@ -11,14 +11,13 @@ if (!class_exists('EulenPanel')) {
         public function init(): void
         {
             add_action('admin_menu', [$this, 'register_menu']);
-            // Arquitetura vira aba dentro do próprio menu Depix
+            
             add_action('admin_init', [$this, 'register_settings']);
         }
 
         public function register_menu(): void
         {
-            // Cria item de nível superior "Depix" na barra esquerda
-            // Não usar imagem de ícone; usaremos o caractere Đ via CSS
+            
             $icon_url = '';
             add_menu_page(
                 __('DePix', 'depixplugin'),
@@ -29,14 +28,14 @@ if (!class_exists('EulenPanel')) {
                 $icon_url,
                 56
             );
-            // Exibe o caractere Đ como ícone à esquerda, mantendo alinhamento padrão
+            
             add_action('admin_head', function(){
                 echo '<style>
                 #toplevel_page_depix-settings .wp-menu-image:before { content: "Đ" !important; font-family: inherit; font-weight: 700; font-size: 18px; line-height: 1; color: #0cdac5; }
                 #toplevel_page_depix-settings .wp-menu-image svg, #toplevel_page_depix-settings .wp-menu-image img { display:none !important; }
                 </style>';
             });
-            // Submenu padrão apontando para a mesma tela de configurações
+            
             add_submenu_page(
                 'depix-settings',
                 __('Configurações', 'depixplugin'),
@@ -46,7 +45,7 @@ if (!class_exists('EulenPanel')) {
                 [$this, 'render_page']
             );
         }
-        // register_arch_menu removido; conteúdo movido para aba interna
+        
 
         public function register_settings(): void
         {
@@ -216,7 +215,7 @@ if (!class_exists('EulenPanel')) {
             echo '<div class="wrap">';
             echo '<h1>' . esc_html__('Depix', 'depixplugin') . '</h1>';
 
-            // Tabs internas: settings | arch
+            
             $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'settings';
             $settings_url = esc_url(admin_url('admin.php?page=depix-settings&tab=settings'));
             $arch_url     = esc_url(admin_url('admin.php?page=depix-settings&tab=arch'));
@@ -249,7 +248,7 @@ if (!class_exists('EulenPanel')) {
                 echo '<p class="description">' . esc_html__('Executa uma chamada /ping para verificar conectividade e autenticação.', 'depixplugin') . '</p>';
                 echo '</form>';
             } else {
-                // Arquitetura (renderizada como Mermaid)
+                
                 $mmd_path = DEPIXPLUGIN_PLUGIN_DIR . 'docs/architecture.mmd';
                 $mmd = '';
                 if (is_readable($mmd_path)) {
@@ -268,7 +267,7 @@ if (!class_exists('EulenPanel')) {
 
             echo '</div>';
         }
-        // render_arch_page removido (incorporado em render_page com abas)
+        
 
         public static function has_token_saved(): bool
         {

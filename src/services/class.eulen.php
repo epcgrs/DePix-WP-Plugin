@@ -83,7 +83,7 @@ class EulenService {
         $payload = array(
             'amountInCents' => $amountInCents,
         );
-        // Campos opcionais – repassados à API quando presentes
+        
         if (isset($opts['liquidAddress']) && is_string($opts['liquidAddress']) && trim($opts['liquidAddress']) !== '') {
             $payload['liquidAddress'] = trim($opts['liquidAddress']);
         }

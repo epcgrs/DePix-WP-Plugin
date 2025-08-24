@@ -1,6 +1,6 @@
-/* Estilos do formulário de contato */
+﻿
 
-/* === Estilos base === */
+
 .depix-root {
     font-family: Helvetica, "Segoe UI", sans-serif;
     background: rgb(238, 238, 238);
@@ -18,7 +18,7 @@
     -ms-user-select: none;
 }
 
-/* === Container do formulário === */
+
 .depix-root .form-container {
     background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -33,7 +33,7 @@
     position: relative;
 }
 
-/* === Logo e barra de progresso === */
+
 .logo-container {
     text-align: center;
     margin-top: 20px;
@@ -41,7 +41,7 @@
 }
 
 .logo-container img {
-    /* user-drag removed for lint compatibility */
+    
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -73,7 +73,7 @@ h1 {
     transition: width 0.4s ease-in-out;
 }
 
-/* === Form Steps & Transitions === */
+
 .form-step {
     display: none;
     height: auto;
@@ -90,14 +90,14 @@ h1 {
     box-sizing: border-box;
 }
 
-/* Reserva margem horizontal para não encostar nos botões centrais (exceto passo 1 e 4) */
+
 .form-step:not([data-step="1"]):not([data-step="4"]) .step-content-wrapper {
     padding-left: 84px;
     padding-right: 84px;
 }
 
 
-/* Ajuste da Etapa 4: também centralizar verticalmente como os demais */
+
 .form-step[data-step="4"] .button-container {
     position: absolute;
     top: 50%;
@@ -116,12 +116,12 @@ h1 {
     to { opacity: 1; }
 }
 
-/* .active: Indica a etapa atualmente exibida */
+
 .form-step.active {
     display: block;
 }
 
-/* === Elementos de formulário (geral) === */
+
 h2 {
     color: #1f2937;
     margin-top: 0;      
@@ -156,7 +156,7 @@ textarea {
     font-size: 1em;
 }
 
-/* Seta personalizada do select */
+
 select {
     appearance: none;
     -webkit-appearance: none;
@@ -186,7 +186,7 @@ textarea {
     min-height: 100px;
 }
 
-/* === Validação e estados de erro === */
+
 .error-message {
     color: #dc3545;
     font-size: 0.85em;
@@ -208,7 +208,7 @@ select.invalid {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Estilo do contêiner para radios inválidos (adicionado via JS) */
+
 .radio-group.invalid {
     border-radius: 6px;
     padding: 8px;
@@ -218,13 +218,13 @@ select.invalid {
 }
 
 
-/* === Estilização de radios (geral) === */
+
 .radio-group {
     margin-bottom: 20px;
     text-align: center;
 }
 
-/* Labels atuando como radios */
+
 .radio-group label {
     display: inline-block;
     margin: 0 10px 10px 10px;
@@ -238,12 +238,12 @@ select.invalid {
     z-index: 1;
 }
 
-/* Esconde o input radio real */
+
 .radio-group input[type="radio"] {
     display: none;
 }
 
-/* Estilo do label selecionado */
+
 .radio-group input[type="radio"]:checked + label {
     background: linear-gradient(135deg, #2c3a4a 0%, #435466 100%);
     border-color: #576c82;
@@ -251,7 +251,7 @@ select.invalid {
     opacity: 0.90;
 }
 
-/* Efeito de desfoque interno nos selecionados via ::before */
+
 .radio-group input[type="radio"]:checked + label::before,
 .category-options input[type="radio"]:checked + label::before
 {
@@ -266,14 +266,14 @@ select.invalid {
     border-radius: inherit;
 }
 
-/* Hover para radios não selecionados */
+
 .radio-group input[type="radio"]:not(:checked) + label:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: #555;
     color: white;
 }
 
-/* === Estilização de checkbox === */
+
 .checkbox-group {
     margin-top: 15px;
     position: relative;
@@ -306,9 +306,9 @@ select.invalid {
     border: 1px dashed rgba(220, 53, 69, 0.3);
 }
 
-/* === Estilo padrão de botão (Eulen) === */
+
 .eulen-button-style {
-    /* Restore original base style, removing explicit transition:none */
+    
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid #444;
     color: #e0e0e0;
@@ -334,15 +334,15 @@ select.invalid {
 
 .eulen-button-style:hover {
     color: white;
-    /* Restore hover effect if it existed */
-    background-color: rgba(255, 255, 255, 0.1); /* Example: slight background change */
-    border: 1px solid #555; /* Example: slight border change */
+    
+    background-color: rgba(255, 255, 255, 0.1); 
+    border: 1px solid #555; 
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .eulen-button-style:active {
-    /* Restore active effect if it existed */
-    transform: translateY(1px); /* Example: slight press effect */
+    
+    transform: translateY(1px); 
 }
 
 .eulen-button-style:disabled,
@@ -354,7 +354,7 @@ select.invalid {
     border: 1px solid #666;
 }
 
-/* === Botões (geral) === */
+
 button {
     padding: 12px 25px;
     border: none;
@@ -363,13 +363,13 @@ button {
     font-size: 1em;
     font-weight: 600;
     margin-top: 15px;
-    /* transition: none !important; - REMOVED */
-    /* animation: none !important; - REMOVED */
+    
+    
     width: auto;
 }
 
 button:active {
-    /* Restore active effect */
+    
     transform: translateY(1px);
 }
 
@@ -381,14 +381,14 @@ button.disabled {
     transform: none;
 }
 
-/* === Botões primários (Próximo, Enviar) === */
+
 .next-btn,
 .submit-btn {
     position: relative;
     z-index: 1;
 }
 
-/* Base compartilhada para botões de navegação (Anterior/Próximo) */
+
 .nav-btn {
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -416,7 +416,7 @@ button.disabled {
     margin: 0;
 }
 
-/* === Botão Anterior (ícone) === */
+
 .prev-btn {
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -445,7 +445,7 @@ button.disabled {
     margin: 0;
 }
 
-/* === Layout do container de botões === */
+
 .button-container {
     position: absolute;
     top: 50%;
@@ -461,10 +461,10 @@ button.disabled {
     width: 100%;
     margin-top: 0;
     z-index: 2;
-    pointer-events: none; /* não bloqueia interação do conteúdo; os botões reativam abaixo */
+    pointer-events: none; 
 }
 
-/* Layout for Step 1 button */
+
 .form-step[data-step="1"] .button-container {
     justify-content: center;
 }
@@ -473,26 +473,26 @@ button.disabled {
 .button-container .next-btn,
 .button-container .submit-btn {
     margin-top: 0;
-    pointer-events: auto; /* permite clicar nos botões */
+    pointer-events: auto; 
 }
 
-/* Botões principais (pílulas quadradas) */
+
 .category-options label {
     border-radius: 12px !important;
     padding: 12px 20px !important;
     font-weight: 600;
 }
-/* moved transform into consolidated checked block below */
+
 .option-row { gap: 15px; }
 
-/* Layout for Step 1 button */
+
 
 
 .form-step[data-step="1"] .next-btn {
     min-width: 150px;
 }
 
-/* === Estilo da mensagem final === */
+
 #final-message {
     padding: 20px;
     background-color: rgba(67, 84, 102, 0.1);
@@ -506,7 +506,7 @@ button.disabled {
     margin-bottom: 10px;
 }
 
-/* === Responsividade === */
+
 @media (max-width: 550px) {
     .form-container {
         padding: 15px 10px;
@@ -527,7 +527,7 @@ button.disabled {
         font-size: 1.3em;
     }
 
-    /* Modificar layout dos botões para ficar horizontal (voltar à esquerda, próximo à direita) */
+    
     .button-container:not(.welcome-button) {
         position: relative;
         top: auto;
@@ -550,7 +550,7 @@ button.disabled {
         margin-left: auto;
     }
 
-    /* Garante que o botão Próximo com ícone (nav-btn) fique circular como o Voltar */
+    
     .button-container:not(.welcome-button) .next-btn.nav-btn {
         width: 44px;
         min-width: 44px;
@@ -559,7 +559,7 @@ button.disabled {
         padding: 0;
     }
 
-    /* Fallback: força formato circular mesmo sem classe nav-btn (passos != 1) */
+    
     .form-step:not([data-step="1"]) .button-container .next-btn {
         width: 44px;
         min-width: 44px;
@@ -578,8 +578,8 @@ button.disabled {
     }
 
     .form-step {
-        height: auto; /* Remover altura fixa no mobile */
-        min-height: 400px; /* Manter uma altura mínima razoável */
+        height: auto; 
+        min-height: 400px; 
     }
 
     .form-step[data-step="1"] .button-container {
@@ -593,7 +593,7 @@ button.disabled {
         margin: 0 auto !important;
     }
 
-    /* Ajustar container do botão na etapa 1 */
+    
     .form-step[data-step="1"] .button-container {
         position: static;
         padding-top: 0;
@@ -603,7 +603,7 @@ button.disabled {
         text-align: center;
     }
 
-    /* Reduz a margem horizontal no mobile para caber conteúdo sem colidir com os botões */
+    
     .form-step:not([data-step="1"]):not([data-step="4"]) .step-content-wrapper {
         padding-left: 16px;
         padding-right: 16px;
@@ -616,7 +616,7 @@ button.disabled {
         width: 100%;
     }
 
-    /* Consolidated: option-row defaults for mobile */
+    
     .option-row {
         flex-direction: column;
     }
@@ -626,7 +626,7 @@ button.disabled {
         flex: none;
     }
 
-    /* Consolidated: category options specific mobile layout */
+    
     .category-options .option-row {
         flex-direction: row;
         flex-wrap: wrap;
@@ -679,7 +679,7 @@ button.disabled {
         justify-content: center;
     }
 
-    /* Consolidated: search results adjustments for mobile */
+    
     .search-results-container {
         width: 100%;
         left: 0;
@@ -700,9 +700,9 @@ button.disabled {
     }
 }
 
-/* (consolidado no bloco @media (max-width: 550px) acima) */
 
-/* === Step 1 Specific Styling (Welcome & Category) === */
+
+
 .welcome-content {
     text-align: center;
     max-width: 80%;
@@ -715,7 +715,7 @@ button.disabled {
     color: #b0b0b0;
 }
 
-/* Center the single 'Continuar' button on Step 1 */
+
 .welcome-button {
     justify-content: center !important;
 }
@@ -736,7 +736,7 @@ button.disabled {
     font-size: 1.05em;
 }
 
-/* === Category Option Layout in Two Rows === */
+
 .option-row {
     display: flex;
     justify-content: center;
@@ -790,9 +790,9 @@ button.disabled {
     flex: 0 0 auto;
 }
 
-/* (consolidado no bloco @media (max-width: 550px) acima) */
 
-/* === Estilo do componente de busca (Etapa 3 - Dúvidas gerais) === */
+
+
 .search-container {
     width: 100%;
     margin-bottom: 20px;
@@ -826,7 +826,7 @@ button.disabled {
     display: none;
 }
 
-/* Container de resultados */
+
 .search-results-container {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 6px;
@@ -840,7 +840,7 @@ button.disabled {
     box-sizing: border-box;
 }
 
-/* Estilo quando resultados estão ativos */
+
 .search-results-container.active {
     height: auto;
     max-height: none;
@@ -872,20 +872,20 @@ button.disabled {
     border-bottom: none;
 }
 
-/* Sem efeito de hover */
+
 .search-result-item:hover {
     background: transparent;
 }
 
-/* === Input com ícone fixo (@ Telegram) === */
-/* Container externo */
+
+
 .input-with-icon {
     position: relative;
     margin-bottom: 20px;
 }
 
 
-/* Flex container do ícone + input (borda/fundo) */
+
 .input-icon-group {
     display: flex;
     align-items: stretch;
@@ -895,7 +895,7 @@ button.disabled {
     overflow: hidden;
 }
 
-/* Parte fixa do ícone (@) */
+
 .input-with-icon .input-icon {
     position: static;
     height: auto;
@@ -910,7 +910,7 @@ button.disabled {
     pointer-events: none;
 }
 
-/* Campo de input ao lado do ícone */
+
 .input-with-icon input[type="text"] {
     padding: 12px 15px;
     margin-bottom: 0;
@@ -971,7 +971,7 @@ button.disabled {
     align-items: center;
     justify-content: center;
     margin-top: 0.5rem;
-    margin-bottom: 0.5rem; /* Add margin below the box */
+    margin-bottom: 0.5rem; 
     transition: border-color 0.3s ease;
     overflow: hidden;
 }
@@ -1068,7 +1068,7 @@ button.disabled {
     vertical-align: middle;
 }
 
-/* === Final Message Styling (Step 4) === */
+
 .message-suggestion {
     color: #8a8a8a;
     font-style: italic;
@@ -1100,7 +1100,7 @@ button.disabled {
     transform: none;
 }
 
-/* Botões de seleção de categoria */
+
 .category-options input[type="radio"]:checked + label {
     background: linear-gradient(135deg, #2c3a4a 0%, #435466 100%);
     border-color: #576c82;
@@ -1116,7 +1116,7 @@ button.disabled {
     color: white;
 }
 
-/* Ajuste da barra de progresso */
+
 .progress-bar .progress {
     background: linear-gradient(to right, rgba(38, 36, 36, 0.181), rgba(144, 139, 139, 0.301));
 }
@@ -1126,7 +1126,7 @@ button.disabled {
    transform: none !important;
 }
 
-/* === Sobrescrever todos os botões === */
+
 button.next-btn.eulen-button-style,
 button.next-btn {
     background-color: rgba(255, 255, 255, 0.05);
@@ -1153,7 +1153,7 @@ button.next-btn:active {
     transform: translateY(1px);
 }
 
-/* Força o layout circular no botão Próximo quando estiver usando o template de navegação */
+
 button.next-btn.nav-btn,
 button.next-btn.nav-btn.eulen-button-style {
     background-color: rgba(255, 255, 255, 0.05);
@@ -1172,7 +1172,7 @@ button.next-btn.nav-btn.eulen-button-style:hover {
     color: #ffffff;
 }
 
-/* === Sobrescrever estilos do botão Anterior === */
+
 button.prev-btn {
     background-color: rgba(255, 255, 255, 0.05);
     background: rgba(255, 255, 255, 0.05);
@@ -1193,7 +1193,7 @@ button.prev-btn:active {
     transform: translateY(1px);
 }
 
-/* CAPTCHA error placement */
+
 .captcha-container .error-message {
     position: relative;
     bottom: 0;
@@ -1202,16 +1202,16 @@ button.prev-btn:active {
     z-index: 1;
 }
 
-/* Progress bar on final step */
 
-/* Garantir que a barra de progresso no último passo (step 4) esteja 100% preenchida */
+
+
 .form-step[data-step="4"].active ~ .progress-bar .progress {
     width: 100%;
 }
 
-/* Remove animations from buttons — no-op placeholders removidos (nada a declarar) */
 
-/* === Caixa de mensagem informativa === */
+
+
 .info-message {
     text-align: center;
 }
@@ -1227,7 +1227,7 @@ button.prev-btn:active {
     font-size: 1.05em;
 }
 
-/* Estilo do botão de parceiros */
+
 .partners-btn {
     display: inline-flex;
     align-items: center;
@@ -1237,7 +1237,7 @@ button.prev-btn:active {
     margin-top: 0;
 }
 
-/* Rótulos dos botões de categoria da Etapa 1 */
+
 .category-options label {
     min-width: auto;
     text-align: center;
@@ -1261,7 +1261,7 @@ button.prev-btn:active {
     background: linear-gradient(135deg, #2c3a4a 0%, #435466 100%);
     border-color: #576c82;
     color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Restore shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
     opacity: 0.85;
 }
 
@@ -1270,12 +1270,12 @@ button.prev-btn:active {
     border-color: #555;
 }
 
-/* Espaçamento específico para página de bug bounty */
-/* .form-step[data-category="security"] sem ajustes adicionais (mantido vazio anteriormente) */
 
-/* .form-step[data-category="security"] .step-content-wrapper sem ajustes adicionais */
 
-/* Ajustar o padding inferior do wrapper para criar espaço acima do botão na Etapa 1 */
+
+
+
+
 .form-step[data-step="1"] .step-content-wrapper {
     padding-bottom: 0px;
     padding-top: 50px;
@@ -1285,15 +1285,15 @@ button.prev-btn:active {
     min-width: 150px;
 }
 
-/* Nova media query específica para telas muito estreitas */
+
 @media (max-width: 380px) {
-    /* Garantir que todos os botões tenham o mesmo espaçamento consistente */
+    
     .category-options .option-row {
         flex-direction: column;
-        gap: 12px; /* Espaçamento uniforme entre botões */
+        gap: 12px; 
     }
     
-    /* Remover qualquer espaçamento específico que possa estar causando inconsistências */
+    
     .option-row:first-child {
         margin-bottom: 0 !important;
         gap: 12px !important;
@@ -1304,7 +1304,7 @@ button.prev-btn:active {
         gap: 12px !important;
     }
     
-    /* Forçar botões para serem elementos de bloco completos */
+    
     .category-options label {
         display: block !important;
         margin: 0 !important;
@@ -1315,7 +1315,7 @@ button.prev-btn:active {
     }
 }
 
-/* (consolidado no bloco @media (max-width: 550px) acima) */
+
 
 .form-step[data-step="4"] {
     min-height: 400px;
@@ -1323,7 +1323,7 @@ button.prev-btn:active {
 
 .form-step[data-step="4"] .step-content-wrapper { min-height: 340px; }
 
-/* Estilo para o botão Tutoriais - usando apenas ID */
+
 #category-docs + label {
     min-width: 120px !important;
     width: 150px !important;
@@ -1331,20 +1331,18 @@ button.prev-btn:active {
     padding-right: 10px;
 }
 
-/* ==============================
-   Light Theme (Comfort Ice White)
-   ============================== */
-/* Nota: aplica somente quando body tiver classe cf-mode-light (via body_class). */
+
+
 .cf-mode-light {
     background:rgb(238, 238, 238);
-    color: #1f2937; /* cinza-escuro confortável */
+    color: #1f2937; 
 }
 
-/* Card principal */
+
 .cf-mode-light .form-container {
     background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.06);
-    /* sombra preta fraquinha, em camadas para suavidade */
+    
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
@@ -1361,10 +1359,10 @@ button.prev-btn:active {
 .cf-mode-light .info-message p { color: #4b5563; }
 .cf-mode-light .message-suggestion { color: #6b7280; }
 .cf-mode-light .category-prompt { color: #3f4a5a; }
-/* Título da etapa 1 pode ter override escuro no tema original */
+
 .cf-mode-light .form-step[data-step="1"] h2 { color: #1f2937 !important; margin-top: 0; }
 
-/* Campos */
+
 .cf-mode-light input[type="text"],
 .cf-mode-light input[type="email"],
 .cf-mode-light input[type="tel"],
@@ -1386,7 +1384,7 @@ button.prev-btn:active {
     box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.25);
 }
 
-/* Mensagens de erro */
+
 .cf-mode-light .error-message { color: #dc2626; }
 .cf-mode-light input.invalid,
 .cf-mode-light textarea.invalid,
@@ -1400,7 +1398,7 @@ button.prev-btn:active {
     border-color: rgba(220, 38, 38, 0.35);
 }
 
-/* Botões (estilo Eulen) */
+
 .cf-mode-light .eulen-button-style {
     background-color: #f8fafc;
     border: 1px solid #d1d5db;
@@ -1419,7 +1417,7 @@ button.prev-btn:active {
     border-color: #e5e7eb;
 }
 
-/* Botões Anterior/Próximo/Enviar */
+
 .cf-mode-light button.next-btn.eulen-button-style,
 .cf-mode-light button.next-btn {
     background-color: #f8fafc;
@@ -1443,7 +1441,7 @@ button.prev-btn:active {
     color: #0f172a;
 }
 
-/* Radios/Categorias */
+
 .cf-mode-light .category-options label,
 .cf-mode-light .radio-group label {
     background-color: #f8fafc;
@@ -1465,16 +1463,16 @@ button.prev-btn:active {
     color: #0f172a;
 }
 
-/* Links e ícones no claro */
+
 .cf-mode-light a.eulen-button-style { color: #0f172a; }
 svg { stroke: currentColor; }
 
 
 
-/* === DePix Logo Mark === */
+
 :root {
     --depix-teal:rgb(12, 218, 197);
-    --btc-orange:#f7931a; /* Bitcoin Orange (brand) */
+    --btc-orange:#f7931a; 
 }
 
 .depix-logo {
@@ -1486,7 +1484,7 @@ svg { stroke: currentColor; }
     line-height: 1;
 }
 
-/* Small inline variant for buttons/labels */
+
 .depix-logo--sm {
     font-size: 1.25em;
     font-weight: 700;
@@ -1498,7 +1496,7 @@ svg { stroke: currentColor; }
     color: var(--depix-teal);
 }
 
-/* === Bitcoin Mark === */
+
 .btc-logo--sm{
     font-size: 1.25em;
     font-weight: 700;
@@ -1558,7 +1556,7 @@ input[disabled] + label.option-card {
 .depix-logo--lg { color: var(--depix-teal); }
 .crypto-name { font-weight: 600; }
 
-/* Amount step styling */
+
 .amount-wrapper {
     margin: 10px auto 0 auto;
     display: inline-flex;
@@ -1576,12 +1574,12 @@ input[disabled] + label.option-card {
 .cf-mode-dark .amount-wrapper { background: rgba(0,0,0,0.3); border-color: #444; }
 .cf-mode-dark .amount-suffix { color: #b0b0b0; }
 
-/* hero logo fixed area */
+
 .form-step[data-step="2"] .step-content-wrapper {
     position: relative;
 }
 
-/* Color themes by asset */
+
 .asset-btc .progress-bar .progress { background: linear-gradient(to right, #f7931a, #e67a00) !important; }
 .asset-depix .progress-bar .progress { background: linear-gradient(to right, #12b7a6, #0ea89a) !important; }
 .asset-btc #amountPrefix { color: var(--depix-teal); }
@@ -1589,7 +1587,7 @@ input[disabled] + label.option-card {
 .asset-btc input#desiredAmountBRL:focus { box-shadow: 0 0 0 2px rgba(12,218,197,0.25); border-color: var(--depix-teal); }
 .asset-depix input#desiredAmountBRL:focus { box-shadow: 0 0 0 2px rgba(12,218,197,0.25); border-color: var(--depix-teal); }
 
-/* Stack (BRL input acima / BTC abaixo) */
+
 .amount-stack {
     max-width: 460px;
     margin: 16px auto 12px auto;
@@ -1627,7 +1625,7 @@ input[disabled] + label.option-card {
 }
 .amount-stack .amount-row .prefix { display:flex; align-items:center; justify-content:center; }
 
-/* Chips de estado: reaproveita radios (somente labels) */
+
 .state-chips {
     margin-top: -10px;
     margin-bottom: 8px;
@@ -1647,7 +1645,7 @@ input[disabled] + label.option-card {
 
 .state-chips .chip-sep { display: inline-block; margin: 0 3px; color: #9ca3af; }
 
-/* Fees note */
+
 .amount-fees {
     font-size: 0.95rem;
     color: #6b7280;
@@ -1668,15 +1666,15 @@ input[disabled] + label.option-card {
 }
 .cf-mode-light .amount-fees { color: #4b5563; }
 
-/* Dica sob o campo de endereço */
+
 .input-hint { margin: 6px 8px 0; font-size: 0.9rem; color: #6b7280; }
 .cf-mode-dark .input-hint { color: #a1a1aa; }
 
-/* DePix output color accents */
+
 html.asset-depix #convertedPrefix { color: var(--depix-teal); }
 html.asset-depix #convertedSuffix { color: var(--depix-teal); }
 
-/* Pagamento Pix (passo 4) */
+
 .pix-payment { max-width: 490px; margin: 16px auto 0; display: grid; gap: 4px; justify-items: center; }
 .form-step[data-step="4"] .step-state-chips { margin-top: -10px; margin-bottom: 8px; }
 .pix-payment .qr-box { width: 140px; height: 140px; border: 1px solid #d1d5db; border-radius: 10px; display: grid; place-items: center; background: transparent; }
@@ -1685,7 +1683,7 @@ html.asset-depix #convertedSuffix { color: var(--depix-teal); }
 .pix-payment .qr-box { position: relative; }
 .pix-payment .qr-box.loading::after { content: ""; position: absolute; inset: 0; margin: auto; width: 26px; height: 26px; border-radius: 50%; border: 3px solid rgba(107,114,128,0.25); border-top-color: var(--spinner-color, var(--btc-orange)); animation: spin 0.8s linear infinite; }
 
-/* set spinner color by asset */
+
 .asset-btc { --spinner-color: var(--btc-orange); }
 .asset-depix { --spinner-color: var(--depix-teal); }
 .pix-payment .qr-box img:not([src]),
@@ -1700,11 +1698,11 @@ html.asset-depix #convertedSuffix { color: var(--depix-teal); }
 .pix-status.waiting { color: #92400e; }
 .pix-status.approved { color: #065f46; }
 
-/* Different greens: BRL prefix darker teal */
+
 .currency-brl { color: #0b9d8f; }
 html.asset-depix .currency-brl { color: #0b9d8f; }
 
-/* Subtle page background tint by asset with smooth fade */
+
 body::before {
     content: '';
     position: fixed;
@@ -1721,7 +1719,7 @@ html.asset-depix body::before {
     background: rgba(18,183,166,0.06);
 }
 
-/* Colorize the amount card subtly based on asset */
+
 .amount-row {
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
@@ -1763,7 +1761,7 @@ html.asset-depix body::before {
     box-shadow: none;
 }
 
-/* Colors for prefixes */
+
 .currency-brl { color: var(--depix-teal); }
 .depix-logo--sm { color: var(--depix-teal); }
 .btc-logo--sm { color: var(--btc-orange); }
@@ -1777,4 +1775,5 @@ html.asset-depix body::before {
 .success-check { display:flex; align-items:center; justify-content:center; }
 .video-responsive { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 640px; margin: 0 auto; border-radius: 8px; }
 .video-responsive iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
 

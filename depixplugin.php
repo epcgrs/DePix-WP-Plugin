@@ -1,7 +1,5 @@
 <?php
-/**
-* @package Depix WP Plugin
-*/
+ 
 
 /*
 Plugin Name: Depix WP Plugin

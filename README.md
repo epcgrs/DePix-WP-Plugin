@@ -1,119 +1,113 @@
 # Depix WP Plugin
 
-An open-source WordPress plugin to use DePix on WordPress.
+Plugin open‑source para integrar o fluxo de pagamentos DePix/Eulen ao WordPress.
 
-## Overview
-This plugin integrates the Depix/Eulen payment flow with WordPress. It securely stores an API token, exposes an admin configuration page, creates a database table for transactions, and provides API/client, webhook, and optional shortcode to test payments.
+## Visão geral
+Este plugin adiciona ao WordPress:
+- Painel de configurações para salvar o token da API (com criptografia AES‑256‑GCM)
+- Criação de tabela de transações no banco (em `ativação`)
+- Cliente/API para criar depósitos (Pix) e consultar status
+- Webhook REST para receber atualizações assíncronas
+- Shortcodes para uso imediato em páginas
 
-## Requirements
-- WordPress 5.8+
-- PHP 7.4+
-- OpenSSL PHP extension enabled
+## Requisitos
+- WordPress 5.8 ou superior
+- PHP 7.4 ou superior
+- Extensão OpenSSL do PHP habilitada
 
-## Installation
-1) Zip the top-level plugin folder and upload via WP Admin → Plugins → Add New → Upload Plugin. Or copy the folder to `wp-content/plugins/` and activate.
-2) Go to Settings → Depix and paste your API token. The token is encrypted with AES-256-GCM using WP salts.
-3) Register the webhook at your provider pointing to: `https://your-site/wp-json/depix/v1/webhook`.
+## Como instalar (passo a passo)
+1) Obtenha o plugin
+   - Opção A: compacte a pasta do plugin e envie via WP Admin → Plugins → Adicionar novo → Enviar plugin.
+   - Opção B: copie a pasta do plugin para `wp-content/plugins/` no seu servidor.
+2) Ative o plugin em Plugins → Instalados.
+3) No painel do WordPress, acesse o menu "DePix" (item de nível superior) → "Configurações".
+4) Cole seu token de API no campo "API Token" e salve. O token é armazenado de forma cifrada usando as WP SALTs.
+5) Opcional: informe e salve o "Webhook Secret" (também ficará cifrado).
+6) Clique em "Fazer Ping na API" para validar conectividade/autenticação.
 
-## Architecture
-- `depixplugin.php`: bootstrap, constants, hooks, textdomain, enqueues.
-- `class.depixplugin.php`: orchestrates initialization (service, DB, panel, webhook) and activation/deactivation hooks.
-- `src/panel/class.eulenpanel.php`: admin UI, token encryption and storage, connectivity test (Ping).
-- `src/services/class.eulen.php`: Depix/Eulen API client (ping, deposit, deposit-status), DB persistence.
-- `src/helpers/class.requests.php`: HTTP wrapper (`wp_remote_*`) with Authorization header management.
-- `src/services/class.database.php`: DB table creation and CRUD helpers.
-- `src/services/class.eulenWebhook.php`: REST route `depix/v1/webhook` for async updates.
-- `src/shortcodes/class.shortcode.php`: demo/diagnostic shortcode `[depix_test]` and AJAX polling.
-- `assets/`: styles/scripts placeholders.
-- `languages/`: translations (text domain `depixplugin`).
+Observação: para obter seu token de API, entre em contato com o suporte da Eulen/DePix.
 
-## Admin Panel (Settings → Depix)
-- Option name: `depix_plugin_api_token_enc_v1`.
-- When saving, the token is encrypted (AES-256-GCM) and stored as JSON (`v, alg, iv, tag, ct`).
-- Connectivity test: a "Ping API" button calls `/ping` and shows the result.
+## Como usar com shortcode (tutorial)
 
-## Payment Flow
-1) Obtain and save the API token in Settings → Depix.
-2) Create a deposit by calling `EulenService::deposit($amountInCents)` from your code.
-3) Show the `qrCopyPaste` and/or `qrImageUrl` to the customer.
-4) Monitor status:
-   - via polling (AJAX → `depix_tx_status`), or
-   - via webhook (`/wp-json/depix/v1/webhook`) which upserts the transaction row.
-5) Treat as final when status is one of: `paid, completed, confirmed, success, depix_sent, expired, canceled, error`.
+### Shortcode principal: checkout completo
+- Shortcode: `[depix_checkout]`
+- O que faz: renderiza um fluxo de compra em múltiplos passos, incluindo valor, rede (Liquid), carteira e pagamento via Pix (com QR Code e Copia‑e‑cola), além de telas auxiliares (perfil/contato/FAQ).
 
-Minimal example:
-```php
-$service = new EulenService();
-$resp = $service->deposit(1000); // R$ 10,00
-// Parse $resp (JSON) for response.id, qrCopyPaste, qrImageUrl
-```
+Passos para usar:
+1) Vá em Páginas → Adicionar nova.
+2) Dê um título (ex.: "Comprar com Pix").
+3) Insira o shortcode `[depix_checkout]` no conteúdo da página.
+4) Publique a página e acesse a URL publicada.
 
-### Errors and async handling (start Pix)
-- This plugin forwards upstream errors verbatim:
-  - HTTP 400 with `{ "error": "<raw-message>" }` when upstream returns `response.errorMessage`.
-  - HTTP 202 with `{ "async": true, "expiration", "urlResponse" }` when server is busy.
-  - HTTP 200 with `{ txId, brcode, qrImageUrl }` on success.
-- Front (`assets/checkout/script.js`): any `!ok` or `202/async` shows the raw text in `#pix-status` and reveals the "Gerar novo QR" retry button.
+Dicas:
+- Ao detectar `[depix_checkout]`, o plugin aplica o template em `templates/depix-blank-template.php` para exibir somente o conteúdo do checkout (sem header/footer do tema), focando na conversão.
+- Os assets do checkout são servidos diretamente do plugin em `assets/checkout/` (CSS/JS). É possível ajustar flags de ambiente e defaults em `assets/checkout/config.json` (opcional).
 
-## Database
-- Table: `{prefix}_depixwp_transactions`
-- Columns: `id, tx_id (unique), amount_cents, status, async, qr_copy_paste, qr_image_url, meta, created_at, updated_at`.
-- Created on activation via `DepixTablesWP::executeInitialTable()`.
+Funcionamento técnico (exato):
+- O shortcode carrega `assets/checkout/main.css`, `assets/checkout/script.js` e `assets/checkout/search.js` e define `window.CFTheme` com:
+  - `baseUrl`: `home_url('/')`
+  - `configUrl`: URL de `assets/checkout/config.json`
+- O JS inicia o Pix chamando via POST o endpoint do plugin: `BASE/api/pix/start` (JSON: `{ amountBRL, network, wallet }`).
+- Status é acompanhado por polling em `BASE/api/pix/status?txId=<id>` a cada ~2s. Caso haja suporte a SSE no servidor (não implementado neste plugin), o JS tenta `/api/pix/stream/<id>` e cai no polling se falhar.
+- Os endpoints `/api/pix/start` e `/api/pix/status` são registrados via rewrite pela camada de serviços do plugin (`src/services/index.php`). Se encontrar 404, vá em Configurações → Links permanentes e clique em "Salvar alterações" para atualizar as regras.
+- O backend persiste transações em banco; o webhook (quando configurado) atualiza o status.
 
-## Webhook
-- Route: `POST /wp-json/depix/v1/webhook`
+### Shortcode de teste: criar Pix simples
+- Shortcode: `[depix_test]`
+- O que faz: exibe um formulário simples para gerar um depósito (Pix) e mostra o QR Code/"Copia e cola". O status é acompanhado por AJAX (`admin-ajax.php?action=depix_tx_status&tx_id=...`).
+
+Passos para usar:
+1) Crie uma página (ex.: "Teste DePix").
+2) Insira o shortcode `[depix_test]` e publique.
+3) Abra a página, informe um valor e gere o Pix para validar o fluxo fim‑a‑fim.
+
+Ambos os shortcodes já vêm habilitados por padrão.
+
+## Webhook (opcional, recomendado)
+- Rota: `POST /wp-json/depix/v1/webhook`
 - Handler: `EulenWebhook::handleRequest`
-- Permission: `verifyWebhookSignature` (currently returns `true`; implement signature/HMAC validation for production).
-- Behavior: normalizes `id/qrId`, updates or inserts the transaction, returns `{ ok, final }`.
+- Autorização: header `Authorization: Basic <secret>`
+- Onde configurar o secret: no menu "DePix" → "Configurações" → "Webhook Secret" (salvo cifrado)
 
-### How to register
-- In your private Telegram channel with Eulen, run: `/registerwebhook deposit https://your-site/wp-json/depix/v1/webhook <secret>`.
-- Header expected: `Authorization: Basic <secret>`.
-- Settings → Depix allows saving the webhook secret encrypted.
-
-### Example body
-```json
-{
-  "bankTxId": "fitbank_...",
-  "blockchainTxID": "4c7dff78...",
-  "payerName": "John Doe",
-  "payerEUID": "EU123...",
-  "payerTaxNumber": "12345678901",
-  "expiration": "2025-03-05T14:33:56-03:00",
-  "pixKey": "68fa...",
-  "qrId": "01954e29d3337e388d5d1cb846b0d053",
-  "status": "depix_sent",
-  "valueInCents": 12345
-}
+Como registrar (Telegram da Eulen):
+```
+/registerwebhook deposit https://seu-dominio/wp-json/depix/v1/webhook <secret>
 ```
 
-### Status mapping (UI)
-- waiting: `created, pending, pix_pending, processing`
-- approved: `paid, completed, confirmed, success, depix_sent`
-- expired: `expired`
-- failed: `canceled, error`
+Comportamento:
+- Normaliza `id/qrId`, atualiza ou cria o registro da transação e retorna `{ ok, final }`.
+- Estados finais (banco): `paid, completed, confirmed, success, depix_sent, expired, canceled, error`.
 
-### Best practices
-- Validate `Authorization` and respond in ≤ 15s with 200.
-- If webhook fails, fallback to deposit-status with low frequency.
-- Official docs: [Webhook – Pix2DePix API](https://pix2depix.apidog.io/-webhook-849106m0)
+Caso o webhook não esteja configurado, é possível consultar status por polling (AJAX) usando o shortcode de teste.
 
-## Shortcode (optional)
-- `[depix_test]` for demo/testing: renders a form, performs `deposit`, shows QR and starts status polling.
-- To enable: uncomment `DepixShortcodes::init();` in `class.depixplugin.php`.
+## Banco de dados
+- Tabela: `{prefix}_depixwp_transactions`
+- Colunas: `id, tx_id (unique), amount_cents, status, async, qr_copy_paste, qr_image_url, meta, created_at, updated_at`
+- Criada na ativação via `DepixTablesWP::executeInitialTable()`
+
+## Referência rápida da estrutura
+- `depixplugin.php`: bootstrap, constantes, hooks, textdomain, enqueues
+- `class.depixplugin.php`: inicializa serviços (API, DB, painel, webhook), hooks de ativação/desativação e template do checkout
+- `src/panel/class.eulenpanel.php`: painel admin, criptografia/armazenamento do token e do webhook secret, teste de Ping
+- `src/services/class.eulen.php`: cliente da API (ping, deposit, deposit-status) + persistência no DB
+- `src/helpers/class.requests.php`: wrapper HTTP (`wp_remote_*`) e cabeçalho Authorization
+- `src/services/class.database.php`: criação da tabela e helpers de CRUD
+- `src/services/class.eulenWebhook.php`: REST `depix/v1/webhook`
+- `src/services/index.php`: endpoints do checkout (`/api/pix/start` e `/api/pix/status`) e REST `/depix/v1/deposit`
+- `src/shortcodes/class.shortcode.php`: shortcodes `[depix_checkout]` e `[depix_test]` e AJAX `depix_tx_status`
+- `assets/checkout/`: CSS/JS do fluxo de checkout
+- `templates/depix-blank-template.php`: template "em branco" para a página com `[depix_checkout]`
+- `languages/`: traduções (text domain `depixplugin`)
+
+## Boas práticas e segurança
+- O token é cifrado com AES‑256‑GCM, com chave derivada das WP SALTs.
+- Use o Ping no painel para validar conectividade e credenciais.
+- Configure o Webhook Secret e valide o cabeçalho `Authorization` no provedor.
+- Mantenha a resposta do webhook em até ~15s e status HTTP 200.
 
 ## i18n
-- Text domain: `depixplugin`.
-- Loaded on `plugins_loaded` from `languages/`.
+- Domínio de tradução: `depixplugin`
+- Carregado em `plugins_loaded` a partir de `languages/`
 
-## Security
-- Token encrypted with AES-256-GCM using keys derived from WP SALTs.
-- Nonces on demo form.
-- `.htaccess` blocks PHP execution in subdirectories and allows static assets.
-- Implement `verifyWebhookSignature` for production.
-
-## Uninstallation (suggested)
-- Optionally implement `uninstall.php` to delete `depix_plugin_api_token_enc_v1` and (optionally) drop the table.
-
-## License
-GPLv2 or later.
+## Licença
+GPLv2 ou posterior.

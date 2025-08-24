@@ -23,7 +23,7 @@ class EulenWebhook {
     }
 
     public function verifyWebhookSignature( $request ) {
-        // Verifica o header Authorization: Basic <secret>
+        
         $secret = null;
         if (defined('DEPIX_WEBHOOK_SECRET') && is_string(DEPIX_WEBHOOK_SECRET) && DEPIX_WEBHOOK_SECRET !== '') {
             $secret = DEPIX_WEBHOOK_SECRET;
@@ -38,7 +38,7 @@ class EulenWebhook {
             }
         }
 
-        // Sem secret configurado: aceitar provisoriamente, mas alertar em log
+        
         if (!$secret) {
             error_log('[Depix][Webhook] Nenhum secret configurado (DEPIX_WEBHOOK_SECRET ou option depix_webhook_secret). Aceitando provisoriamente.');
             return true;
